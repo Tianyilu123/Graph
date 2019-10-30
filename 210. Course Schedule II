@@ -1,0 +1,51 @@
+
+class Solution {
+    private int curLab = 0;
+    
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        Vetex[] array = new Vetex[numCourses];
+        for(int i=0; i<numCourses; i++) {
+            array[i] = new Vetex(i);
+        }
+        int row = prerequisites.length;
+        for(int i=0; i<row; i++) {
+            int prev = prerequisites[i][1];
+            int next = prerequisites[i][0];
+            array[prev].nexts.add(next);
+        }
+        int res[] = new int[numCourses];
+        curLab = numCourses - 1;
+        for(int i=0; i<numCourses; i++) {
+            if(!topo(res, array[i], array, new HashSet<Integer>()))
+                return new int[0];
+        }
+        return res;
+    }
+    
+    public boolean topo(int[] res, Vetex source, Vetex[] array, HashSet<Integer> set) {
+        if(set.contains(source.val))
+            return false;
+        if(source.visited) // prunning
+            return true;
+        source.visited = true;
+        set.add(source.val);
+        for(int i : source.nexts) {
+            if(!topo(res, array[i], array, set))
+                return false;
+        }
+        set.remove(source.val);
+        res[curLab--] = source.val;
+        return true;
+    }
+}
+
+class Vetex {
+    public int val;
+    public int label;
+    public List<Integer> nexts = new ArrayList<Integer>();
+    public boolean visited = false;
+    
+    public Vetex(int i) {
+        this.val = i;
+    }
+}
