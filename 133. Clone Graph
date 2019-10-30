@@ -1,0 +1,39 @@
+// method 1, DFS with recursion
+class Solution {
+    HashMap<Node, Node> map = new HashMap<>();
+    public Node cloneGraph(Node node) {
+        map.put(node, new Node(node.val, new ArrayList<>()));
+        
+        for(Node neighbor : node.neighbors) {
+            if(map.containsKey(neighbor)) {
+                map.get(node).neighbors.add(map.get(neighbor));
+            } else {
+                map.get(node).neighbors.add(cloneGraph(neighbor));
+            }
+        }
+        return map.get(node);
+    }
+}
+
+// method 2, iteration with queue : 
+class Solution {
+    public Node cloneGraph(Node node) {
+        if(node == null) return null;
+        HashMap<Node, Node> map = new HashMap<>();
+        Queue<Node> queue = new LinkedList<>();
+        queue.offer(node);
+        Node newNode = new Node(node.val, new ArrayList<Node>());
+        map.put(node, newNode);
+        while(!queue.isEmpty()) {
+            Node curr = queue.poll();
+            for(Node neighbor : curr.neighbors) {
+                if(!map.containsKey(neighbor)) {
+                    map.put(neighbor, new Node(neighbor.val, new ArrayList<Node>()));
+                    queue.offer(neighbor);
+                }
+                map.get(curr).neighbors.add(map.get(neighbor));
+            }
+        }
+        return newNode;
+    }
+}
