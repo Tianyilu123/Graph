@@ -1,0 +1,115 @@
+
+// method 1: DFS
+class Solution {
+    public int countComponents(int n, int[][] edges) {
+        if(edges == null) return 0;
+        List<V> list = new ArrayList<V>();
+        
+        for(int i=0; i<n; i++)
+            list.add(new V(i));
+        
+        for(int[] edge : edges) {
+            V v0 = list.get(edge[0]);
+            V v1 = list.get(edge[1]);
+            v0.add(v1);
+            v1.add(v0);
+        }
+        
+        int count = 0;
+        for(V cur : list) {
+            if(!cur.visited) {
+                count++;
+                dfs(cur);
+            }
+        }
+        return count;
+    }
+    
+    private void dfs(V cur) {
+        cur.visited = true;
+        
+        for(V v : cur.nei) {
+            if(!v.visited)
+                dfs(v);
+        }
+    }
+    
+    class V {
+        public int label;
+        public List<V> nei;
+        public boolean visited;
+        
+        public V(int label) {
+            this.label = label;
+            this.visited = false;
+            nei = new ArrayList<V>();
+        }
+        
+        public void add(V v) {
+            this.nei.add(v);
+        }
+    }
+}
+
+// Color Vertex; DFS: O(V + E)
+
+
+// method 2: UnionFind:
+
+class Solution {
+    public int countComponents(int n, int[][] edges) {
+        if(edges == null) return 0;
+        UnionFind uf = new UnionFind(n);
+        for(int[] edge : edges) {
+            int v0 = edge[0], v1 = edge[1];
+            if(!uf.find(v0, v1))
+                uf.union(v0, v1);
+        }
+        
+        return uf.size;
+    }
+}
+
+class UnionFind {
+    public int size;
+    public int[] ids, sz;
+    
+    public UnionFind(int n) {
+        size = n;
+        ids = new int[n];
+        sz = new int[n];
+        for(int i=0; i<n; i++) {
+            ids[i] = i;
+            sz[i] = 1;
+        }
+    }
+    
+    public boolean find(int p, int q) {
+        return root(p) == root(q);
+    }
+    
+    public void union(int p, int q) {
+        int rootP = root(p), rootQ = root(q);
+        if(sz[rootP] < sz[rootQ]) {
+            int temp = rootP;
+            rootP = rootQ;
+            rootQ = temp;
+        }
+        
+        ids[rootQ] = rootP;
+        sz[rootP] += sz[rootQ];
+        this.size--;
+    }
+    
+    private int root(int i) {
+        int tempI = i;
+        while(i != ids[i]) {
+            ids[i] = ids[ids[i]];
+            i = ids[i];
+        }
+        ids[tempI] = i;
+        return i;
+    }
+}
+
+// time : O(E*lgV)
