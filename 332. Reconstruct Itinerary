@@ -1,0 +1,58 @@
+
+class Solution {
+    public List<String> findItinerary(List<List<String>> tickets) {
+        HashMap<String, PriorityQueue<String>> graph = 
+            new HashMap<String, PriorityQueue<String>>();
+        for(List<String> pair : tickets) {
+            String from = pair.get(0);
+            String to = pair.get(1);
+            PriorityQueue<String> nexts;
+            if(graph.containsKey(from))
+                nexts = graph.get(from);
+            else{
+                nexts = new PriorityQueue<String>();
+            }
+            
+            nexts.offer(to);
+            graph.put(from, nexts);
+        }
+        
+        List<String> res = new ArrayList<>();
+        List<String> curList = new ArrayList<>();
+        String cur = "JFK";
+        curList.add(cur);
+        search(res, curList, cur, tickets.size(), graph);
+        return res;
+    }
+    
+    private boolean search(List<String> res, List<String> curList, String cur, int curNum,
+                          HashMap<String, PriorityQueue<String>> graph) {
+        if(curNum == 0) {
+            for(String str : curList)
+                res.add(str);
+            return true;
+        }
+        if(!graph.containsKey(cur))
+            return false;
+        PriorityQueue<String> nexts = graph.get(cur);
+        int size = nexts.size();
+        for(int i=1; i<=size; i++) {
+            int count = i;
+            List<String> list = new ArrayList<>();
+            String to = "";
+            while(count-- > 0) {
+                to = nexts.poll();
+                if(count > 0) list.add(to);
+            }
+            for(String str : list)
+                nexts.offer(str);
+            
+            curList.add(to);
+            if(search(res, curList, to, curNum-1, graph))
+                return true;
+            curList.remove(curList.size() - 1);
+            nexts.add(to);
+        }
+        return false;
+    }
+}
