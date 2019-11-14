@@ -15,7 +15,36 @@ class Solution {
     }
 }
 
-// method 2, iteration with queue : 
+
+// method 2:
+class Solution {
+    HashMap<Node, Node> map = new HashMap<>();
+    public Node cloneGraph(Node node) {
+        if(node == null) return node;
+        return dfs(node);
+    }
+    
+    private Node dfs(Node node) {
+        if(node == null) return node;
+        if(map.containsKey(node)) {
+            return map.get(node);
+        } else {
+            Node newNode = new Node(node.val);
+            map.put(node, newNode);
+            List<Node> list = new ArrayList<>();
+            for(Node nei : node.neighbors) {
+                list.add(dfs(nei));
+            }
+            newNode.neighbors = list;
+            return newNode;
+        }
+    }
+}
+
+
+
+// method 3:  
+iteration with queue : 
 class Solution {
     public Node cloneGraph(Node node) {
         if(node == null) return null;
