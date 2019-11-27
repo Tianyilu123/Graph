@@ -1,4 +1,4 @@
-
+// method 1:
 class Solution {
     private int curLab = 0;
     
@@ -47,5 +47,70 @@ class Vetex {
     
     public Vetex(int i) {
         this.val = i;
+    }
+}
+
+
+// method 2:
+
+class Solution {
+    private int curSize;
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        if(prerequisites == null)
+            throw new IllegalArgumentException("invalid input");
+        int len = prerequisites.length;
+        V[] array = new V[numCourses];
+        
+        for(int i=0; i<numCourses; i++) {
+            array[i] = new V(i);
+        }
+        
+        for(int i=0; i<len; i++) {
+            int prev = prerequisites[i][1];
+            int next = prerequisites[i][0];
+            array[prev].nexts.add(next);
+        }
+        
+        int[] res = new int[numCourses];
+        
+        curSize = numCourses-1;
+        for(int i=0; i<numCourses; i++) {
+            if(noCycle(array[i], array, res) == false)
+                return new int[0];
+        }
+        return res;
+    }
+    
+    class V {
+        public int val;
+        public List<Integer> nexts;
+        public Status status;
+        
+        public V(int n) {
+            this.val = n;
+            this.nexts = new ArrayList<Integer>();
+            this.status = Status.None;
+        }
+    }
+    
+    private enum Status {
+        None, visiting, visited;
+    }
+    
+    private boolean noCycle(V cur, V[] array, int[] res) {
+        if(cur.status == Status.visiting) return false;
+        if(cur.status == Status.visited) return true;
+        
+        cur.status = Status.visiting;
+        
+        for(int i : cur.nexts) {
+            if(!noCycle(array[i], array, res)) {
+                return false;
+            }
+        }
+        
+        cur.status = Status.visited;
+        res[curSize--] = cur.val;
+        return true;
     }
 }
