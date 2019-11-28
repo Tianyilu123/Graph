@@ -1,0 +1,17 @@
+class Solution {
+    HashSet<Integer> set = new HashSet<>();
+    
+    public boolean canVisitAllRooms(List<List<Integer>> rooms) {
+        helper(0, rooms);
+        return set.size() == rooms.size();
+    }
+    
+    private void helper(int roomId, List<List<Integer>> rooms) {
+        set.add(roomId);
+        List<Integer> keysInRoom = rooms.get(roomId);
+        for(int key : keysInRoom) {
+            if(!set.contains(key))
+                helper(key, rooms);
+        }
+    }
+}
