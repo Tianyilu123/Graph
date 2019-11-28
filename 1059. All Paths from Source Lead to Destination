@@ -1,0 +1,42 @@
+class Solution {
+    public boolean leadsToDestination(int n, int[][] edges, int source, int destination) {
+        if(edges == null || edges.length == 0) return true;
+        
+        List<Integer>[] graph = new List[n];
+        int[] colors = new int[n];
+        
+        buildGraph(graph, edges);
+        
+        return dfs(graph, source, destination, colors);
+    }
+    
+    private void buildGraph(List<Integer>[] graph, int[][] edges) {
+        for(int[] edge : edges) {
+            int from = edge[0];
+            int to = edge[1];
+            
+            if(graph[from] == null) {
+                graph[from] = new LinkedList<>();
+            }
+            
+            graph[from].add(to);
+        }
+    }
+    
+    private boolean dfs(List<Integer>[] graph, int s, int d, int[] colors) {
+        if(graph[s] == null || graph[s].size() == 0) {
+            return s == d;
+        }
+        
+        colors[s] = 1;
+        for(int next : graph[s]) {
+            if(colors[next] == 1) return false;
+            if(colors[next] == 0 && !dfs(graph, next, d, colors)) {
+                return false;
+            }
+        }
+        
+        colors[s] = 2;
+        return true;
+    }
+}
