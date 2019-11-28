@@ -1,0 +1,47 @@
+class Solution {
+    
+    boolean ans=true;
+    Map<Integer,Integer> im = new HashMap<>();
+    public boolean sequenceReconstruction(int[] org, List<List<Integer>> seqs) {
+        
+        Map<Integer, Set<Integer>> graph = new HashMap<>();
+        Set<Integer> nodes = new HashSet<>();
+        int edges=0;
+        for(List<Integer> seq : seqs){
+            if(seq.size()==1){
+                graph.putIfAbsent(seq.get(0), new HashSet<>());
+                edges++;
+                nodes.add(seq.get(0));
+            }
+            for(int i=0;i<seq.size()-1;i++){
+                graph.computeIfAbsent(seq.get(i), k -> new HashSet<>()).add(seq.get(i+1));
+                edges++;
+                nodes.add(seq.get(i));
+                nodes.add(seq.get(i+1));
+            }
+        }
+        if(edges==0) return false;
+        Set<Integer> visited = new HashSet<>();
+        dfs(graph, visited, org[0], org.length-1, org);
+        return edges>=org.length-1 && ans && visited.size()==nodes.size();
+        
+    }
+    private int dfs(Map<Integer, Set<Integer>> graph, Set<Integer> visited, int node, int index, int[] org){
+        
+       if(visited.contains(node)) {
+           index = im.get(node)!=null?im.get(node):index;
+           if(org[index]!=node) ans=false;
+           return index-1;
+       }
+       visited.add(node);
+       int ni = index;
+       if(graph.containsKey(node)){
+           for(int nei : graph.get(node)){
+               ni = Math.min(ni,dfs(graph, visited, nei, index, org));
+           }
+       }
+       im.put(node, ni);
+       if(ni<0 || org[ni]!=node) ans=false;
+       return ni-1;
+    }
+}
